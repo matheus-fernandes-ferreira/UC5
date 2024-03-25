@@ -24,15 +24,15 @@ ALTER TABLE funcionario alter column cpf char(14);
 create table funcionario(
 id_funcionario int identity (1,1) primary key,
 nome nvarchar(50) not null unique,
-cpf char(1) unique not null,
-id_endereco int,
-foreign key (id_endereco) references endereco (id_endereco),
+cpf char(14) unique not null,
 telefone char(14),
 email nvarchar(50) unique,
 salario decimal(6,2) unique not null,
-data_admissao date
+data_admissao date,
+id_unidade INT,
+id_endereco int,
+foreign key (id_endereco) references endereco (id_endereco),
 );
-
 
 
 create table instrutor(
@@ -121,10 +121,17 @@ id_curso int identity(1,1) primary key,
 nome_curso nvarchar(50) unique not null,
 carga_horaria time not null,
  duracao int,
- preco decimal(6,2) not null
+ preco decimal(6,2) not null,
+ categoria NVARCHAR(30)
 );
 
-ALTER TABLE curso ADD preco decimal(6,2) not null; --numero de meses
+--ALTER TABLE curso ADD categoria NVARCHAR(30);
+--ALTER TABLE curso ADD preco decimal(6,2) not null; --numero de meses
+
+CREATE TABLE curso_unidade(
+    id_unidade INT,
+    id_curso INT    
+);
 
 create table modalidade_presencial(
 id_curso int,
