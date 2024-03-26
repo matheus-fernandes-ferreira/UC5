@@ -53,6 +53,11 @@ VALUES
 ('Eduardo Santos', '012.345.678-09', '(84) 0000-0000', 'eduardo.santos@senac.rn.gov.br', 6500.00, '2023-10-01', 2, 10);
 
 
+select * from endereco;
+--comando para contar a quantidade de registros em uma tabela
+select count(id_endereco) as numero from endereco; group by id_endereco;
+--comando para contar a quantidade de registros da tabela agrupado por uma  categoria (coluna)
+select id_endereco, count(id_endereco) as numero from endereco group by id_endereco;
 
 
 ALTER TABLE funcionario ALTER COLUMN cpf char(14)not null;

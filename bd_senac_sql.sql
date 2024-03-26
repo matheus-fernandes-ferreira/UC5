@@ -10,6 +10,7 @@ cidade nvarchar(30) not null,
 cep char(9) not null
 );
 
+
 create table senac_unidade(
 id_unidade int identity (1,1) primary key,
 id_endereco int,
