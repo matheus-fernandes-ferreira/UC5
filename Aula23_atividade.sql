@@ -123,3 +123,6 @@ join SOCIOLOGIA on SOCIOLOGIA.numero_registro = LIVRO.numero_registro
 where LIVRO.ano_publicacao >= '1990' and LIVRO.ano_publicacao < '2000';
 
 --0.Exibir os títulos dos livros e os nomes dos autores dos livros emprestados em fevereiro de 2023.
+
+
+
