@@ -43,20 +43,30 @@ begin
 	from LIVRO_BIBLIOTECA
 	group by cnpj
 end
+exec sp_total_livros_biblioteca
+select * from BIBLIOTECA
 
 --5. Procedure para listar os eventos do tipo 'Workshop' que ocorreram após 2020.
-create procedure sp_evento_workshop
-	@data DATE
+alter procedure sp_evento_workshop
+	@data nvarchar(30)
 as
 begin
 	select * from EVENTO
-	where EVENTO.tipo = 'workshop' and EVENTO.data > @data
+	where EVENTO.tipo = 'workshop' and year (data) > @data
 end
 
 exec sp_evento_workshop @data = '2020';
 
 --6. Procedure para exibir os nomes dos usuários que fizeram empréstimos de livros em janeiro de 2023.
+alter procedure sp_usuario_emprestimo
+@mes int, @ano int
+as
+begin
+	select * from emprestimo
+	where MONTH(data_emprestimo) = @mes and  YEAR (data_emprestimo) = @ano
+end
 
+exec sp_usuario_emprestimo @mes = 1, @ano = 2023
 
 --7. Procedure para retornar os títulos dos livros de tecnologia que têm 'Python' no título.
 create procedure sp_livros_python
@@ -89,7 +99,21 @@ end
 
 exec sp_funcionarios_dif_ti;
 
---Procedure para exibir o título e o autor dos livros emprestados pelo usuário com ID 'U0001'.--11.Procedure para listar todas as palestras que custaram mais de R$ 100,00.
+--10 Procedure para exibir o título e o autor dos livros emprestados pelo usuário com ID 'U0001'.
+create procedure sp_livros_emprestados
+@matricula nvarchar(5)
+as
+begin
+select LIVRO.titulo, LIVRO.autor from LIVRO
+join emprestimo on emprestimo.numero_registro = LIVRO.numero_registro
+join USUARIO on USUARIO.matricula = emprestimo.matricula
+where USUARIO.matricula = @matricula
+wnd
+ 
+exec sp_livros_emprestados @matricula = 'U0001'
+
+
+--11.Procedure para listar todas as palestras que custaram mais de R$ 100,00.
 create procedure sp_palestras_custo
 	@custo decimal (6,2)
 as
@@ -112,19 +136,47 @@ END
 exec sp_livros_ciencia @ano_publicacao = '2010';
 
 --13.Procedure para exibir os nomes dos atendentes que têm 'Maria' no nome.
-create procedure sp_nome_atendentes
+alter procedure sp_nome_atendentes
 	@nome nvarchar(50)
 as
 begin
 	select FUNCIONARIO.nome from FUNCIONARIO
 	join ATENDENTE on ATENDENTE.matricula = FUNCIONARIO.matricula
-	where FUNCIONARIO.nome like '%' + @nome + '%'
+	where 
+	FUNCIONARIO.nome like '% ' + @nome + ' %'
+	or FUNCIONARIO.nome like @nome + ' %'
+	or FUNCIONARIO.nome like '% ' + @nome 
 end
-exec sp_nome_atendentes @nome = 'Maria';
+
+exec sp_nome_atendentes @nome = 'Maria ';
 
 --14.Procedure para mostrar os títulos dos livros que foram emprestados mais de 5 vezes.
+create procedure sp_livros_emprestados
+as 
+begin
+	select LIVRO.titulo as empretimo
+	from LIVRO
+	join emprestimo on emprestimo.numero_registro = LIVRO.numero_registro
+	where (select COUNT(*) from emprestimo
+	where LIVRO.numero_registro = emprestimo.numero_registro) > 5;
+end
+
+exec sp_livros_emprestados
+
 
 --15.Procedure para listar os nomes dos usuários que emprestaram livros de tecnologia.
+create procedure sp_emprestimo_tecnologia
+as
+begin
+	select USUARIO.nome, LIVRO.titulo from USUARIO
+	join emprestimo on emprestimo.numero_registro = USUARIO.numero_registro
+	join LIVRO on emprestimo.numero_registro = LIVRO.numero_registro
+	join TECNOLOGIA on TECNOLOGIA.numero_registro = LIVRO.numero_registro
+	where TECNOLOGIA.numero_registro = emprestimo.numero_registro
+end
+
+exec sp_emprestimo_tecnologia
+
 
 --views
 --1. View para listar todos os livros com seus respectivos autores e ano de publicação.
